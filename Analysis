@@ -1,0 +1,9 @@
+Analysis for my project--------------------------
+
+I am creating an online version of Love Letters for my friend _______. It is being designed so he can play love letters with others online or by himself.
+
+Specifications:
+The program must have a way to specify how many players will be playing (2 - 4) and whether the opponents are player connected from another computer or if they are a computer opponent.
+The computer based opponents must have a difficulty setting to make it easier or harder for the players to beat. The hardest opponents should be able to predict what cards other players have and the easiest opponent should make small errors and be more erratic.
+The cards must all have a value and an ability that happens when it is played and any other ability that is triggered by the card.
+Players must have a name and an in/out state, a counter of how many hearts they have won and a current card (that can only be seen by them and actions that involve the cards role)
