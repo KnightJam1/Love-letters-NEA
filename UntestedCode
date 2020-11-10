@@ -1,0 +1,46 @@
+// Assorted code peices for the player object
+Class Player
+private string playerName;
+private int hearts;
+private bool isOut;
+private Card currentCard;
+
+string getPlayerName(){}
+void setPlayerName(string newName){}
+int getHearts(){}
+void giveHearts(int numHearts){}
+Card getCard(){}
+void setCard(){}
+void takeOut(){}
+void initialize(){}
+
+// Assorted code pieces for the parent card class
+Class Card
+private int value;
+private string cardName;
+private string role;
+private string description;
+
+int getValue(){}
+string getCardName(){}
+string getCardRole(){}
+string getCardDescription(){}
+
+virtual void onPickUp(){}
+virtual void onPlay(){}
+virtual void discard(){}
+
+// ACP for GuardCard, subclass of Card with value 1
+class GuardCard : Card
+constructor(string genName) {
+value = 1;
+role = "Guard";
+}
+
+// the guard card allows the user to accuse someone else of being a different card
+override void onPlay(){
+Player accused = null; //replace with the accused player
+int guessValue = 0; // replace with guessed card
+if (guessvalue == accused.getCard.getCardValue){
+accused.takeOut();
+}
