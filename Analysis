@@ -1,14 +1,7 @@
 --Analysis for my project--
 
-I am creating an online version of Love Letters for my friend Douglas Tennant. It is being designed so he can play love letters with others online or by himself.
-
-Specifications:
-The program must have a way to specify how many players will be playing (2 - 4) and whether the opponents are player connected from another computer or if they are a computer opponent.
-The computer based opponents must have a difficulty setting to make it easier or harder for the players to beat. The hardest opponents should be able to predict what cards other players have and the easiest opponent should make small errors and be more erratic.
-The cards must all have a value and an ability that happens when it is played and any other ability that is triggered by the card.
-Players must have a name and an in/out state, a counter of how many hearts they have won and a current card (that can only be seen by them and actions that involve the cards role)
-The system must be friendly to all users, supplying short descriptions of what every button does, and providing a tutorial. This to prevent players getting lost or having difficulty playing the game. The tutorial will guide new players so they dont have to learn from scratch, but also help returning players remember how to play.
-There must be a suitable main menu containing a host and a join button, letting players create their own game with a combination of computer players or online players, or join an existing game once given an ip and port.
+The project consists of an online version of Love Letters.
+Douglas Tennant is a keen fan of board games, including the game Love Letters. He wishes to play love letters with others online or by himself against some virtual opponents.
 
 Overview:
 Love letters is a game where multiple people compete for the heart of a princess.
@@ -29,8 +22,17 @@ The countess:
 -The countess is worth 7 points. The countess has no special ability once played, but must be discarded if you have both the countess and either the king or the prince.
 The princess:
 -Worth the most out of all the cards, the princess is worth 8 points. If you discard the princess through any means, you must go out.
+
 Each round begins with one card removed from the pack and one card given to each of the players.
-A random player goes first and draws an extra card. One of the two cards must be played, often causing a special effect and the card still held is the one used in any effects that involve the player.
+A random player goes first and draws a second card. One of the two cards must be played, often causing a special effect and the card still held is the one used in any effects that involve the player. The played card is placed in front of them for others to see.
 Numerous events may end in a player going out, in this case they must discard their card/cards without its effect going into effect and wont have any subsequent turns in the round.
 When all cards have run out, or one player is left, the values of the cards are compared and the player with the highest score wins one heart from the princess.
-The hosting player may choose any amount from 1 - 10 hearts needed to win the game when the game is started and the rounds will repeat until a player has reached the needed amount of hearts.
+The hosting player may choose any amount from 1 - 10 hearts needed to win the game. This would be decided when the game is started by the host. The rounds will repeat until a player has reached the specified necessary amount of hearts.
+
+Specifications:
+The program must have a way to specify how many players will be playing (2 - 4) and whether the opponents are player connected from another computer or if they are a computer opponent.
+The computer based opponents must have a difficulty setting to make it easier or harder for the players to beat. The hardest opponents should be able to predict what cards other players have and the easiest opponent should make small errors and be more erratic.
+The cards must all have a value and an ability that happens when it is played and any other ability that is triggered by the card.
+Players must have a name and an in/out state, a counter of how many hearts they have won and a current card (that can only be seen by them and actions that involve the cards role)
+The system must be friendly to all users, supplying short descriptions of what every button does, and providing a tutorial. This to prevent players getting lost or having difficulty playing the game. The tutorial will guide new players so they dont have to learn from scratch, but also help returning players remember how to play.
+There must be a suitable main menu containing a host and a join button, letting players create their own game with a combination of computer players or online players, or join an existing game once given an ip and port.
