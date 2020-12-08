@@ -6,8 +6,9 @@ A friend of mine, Douglas Tennant, is a keen fan of board games, including the g
 Overview:
 Love letters is a game where multiple people compete for the heart of a princess.
 The game revolves around a set of cards depicting characters found in the palace:
+
 The Guards:
--Worth only 1 point, there are five of these cards. When played, the player can accuse someone of holding a certain card. If the accusing player guesses the correct card, the accused player goes out of that round.
+-Worth only 1 point, there are five of these cards. When played, the player can accuse someone of holding a certain card. If the accusing player guesses the correct card, the accused player goes out of that round. However, a guard cannot accuse another player of being a guard.
 The priests:
 -Worth 2 points, there are 2 priest cards. When played, the player can choose one other player to reveal their card to them only.
 The barons:
