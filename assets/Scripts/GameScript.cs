@@ -19,6 +19,21 @@ public class GameScript : MonoBehaviour
     private string[] surnames;
     private string[] suffixes;
 
+    GameObject hiddenCardTextBox;
+    GameObject deckTextBox;
+
+    private int currentPlayerNum = 0;
+    private int turnStage = 0;
+    private int chosencard = 0;
+    private int cardClicked = 0;
+
+    public Button cardButtonA;
+    public Button cardButtonB;
+    //0-draw a card, 1-wait for player to choose a card, 2-play the card, 3-initiate next turn
+
+    GroupedCards deck = new GroupedCards();
+    List<Player> players = new List<Player>();
+
     // MaleNameGen returns a male forename
     private string maleNameGen()
     {
@@ -48,9 +63,31 @@ public class GameScript : MonoBehaviour
         }
     }
 
+    // Turn function that draws a card for the user and makes them play one
+    /*void GameTurn(Player turnPlayer)
+    {
+        // Draw a card
+        // Display both cards
+        // Do any possible draw effects
+        // Make player choose a card
+        // Do any possible play effects
+    }*/
+
+    private void CBAClick()
+    {
+        Debug.Log("A clicky");
+        cardClicked = 1;
+    }
+    private void CBBClick()
+    {
+        Debug.Log("B clicky");
+        cardClicked = 2;
+    }
+
     // Start is called before the first frame update
     void Start()
     {
+        // Assign gameobjects to existing instances
         // Collect all names from the text files
         maleNames = maleNameFile.text.Split('\n');
         femaleNames = femaleNameFile.text.Split('\n');
@@ -59,9 +96,8 @@ public class GameScript : MonoBehaviour
         suffixes = suffixFile.text.Split('\n');
         string royalLine = surnameGen();
 
-        // Create the empty deck
-        GroupedCards deck = new GroupedCards();
-        Debug.Log("Created Deck");
+        // Create the deck
+        Debug.Log("Creating Deck");
 
         // Put 5 guard cards into the deck
         for (int i = 0; i < 5; i++)
@@ -117,20 +153,114 @@ public class GameScript : MonoBehaviour
         deck.addCard(new PrincessCard(femaleNameGen() + " " + royalLine));
         Debug.Log("Added Princess: " + deck.getCard(15).getCardName() + " to deck.");
 
-        List<Player> players = new List<Player>();
+        // Create 4 players
         for (int i = 0; i < 4; i++){
             players.Add(new Player(i, "Player" + (i+1)));
             Debug.Log("Added new player " + players[i].getPlayerName());
         }
 
+        // Hide one card from the deck. This card will not be used in the game
         GroupedCards hiddenCard = new GroupedCards();
         hiddenCard.addCard(deck.takeCard(Random.Range(0,deck.getCount())));
         Debug.Log("Hid " + hiddenCard.getCard(0).getCardRole() + " card");
+
+        // Take one card out of the deck for each player
+        foreach (Player play in players)
+        {
+            play.takeCard(deck.takeCard(Random.Range(0, deck.getCount())));
+            Debug.Log("Player " + play.getPlayerName() + " took " + play.getCardFromHand(0).getCardRole() + " card ");
+        }
+        //
+        cardButtonA.onClick.AddListener(CBAClick);
+        cardButtonB.onClick.AddListener(CBBClick);
     }
 
     // Update is called once per frame
     void Update()
     {
         
+        // Start a round system
+        // Check whether there are any cards left in the deck
+        if (deck.getCount() > 0)
+        {
+            //Debug.Log("deck has cards");
+            // Do a turn with (player) input
+            switch (turnStage)
+            {
+                case 0:
+                    // Draw a new card
+                    players[currentPlayerNum].takeCard(deck.takeCard(0));
+                    Debug.Log("turnstage 0 reached (drawing card), with player " + currentPlayerNum);
+                    turnStage = 1;
+                    break;
+                case 1:
+                    // Wait for decision
+                    //Debug.Log("turnstage 1 reached (deciding on a card)");
+                    if (cardClicked > 0)
+                    {
+                        Debug.Log("Card was chosen");
+                        chosencard = cardClicked - 1;
+                        turnStage = 2;
+                    }
+                    break;
+                case 2:
+                    // Branch in path
+                    if (players[currentPlayerNum].getCardFromHand(chosencard).getValue() < 4 || (players[currentPlayerNum].getCardFromHand(chosencard).getValue() > 4 && players[currentPlayerNum].getCardFromHand(chosencard).getValue() < 7))/*players[currentPlayerNum].getCardFromHand(chosencard).isCardDirected(chosencard)*/
+                    {
+                        Debug.Log("turnstage 2 reached, moving on to 3 (directed card)");
+                        turnStage = 3;
+                    }
+                    else
+                    {
+                        Debug.Log("turnstage 2 reached, moving on to 4 (undirected card)");
+                        turnStage = 4;
+                    }
+                    break;
+                case 3:
+                    // Direct the card at an opponent
+                    int targetplayer = (currentPlayerNum + 1) % 4;
+                    // Play card
+                    players[currentPlayerNum].getCardFromHand(chosencard).play(players[currentPlayerNum],players[targetplayer]);
+                    Debug.Log("turnstage 3 reached (play directed card)");
+                    turnStage = 5;
+                    break;
+                case 4:
+                    // Play card with no target
+                    players[currentPlayerNum].getCardFromHand(chosencard).play(players[currentPlayerNum], players[0]);
+                    //Debug.Log("turnstage 4 reached (play undirected card)");
+                    turnStage = 5;
+                    break;
+                case 5:
+                    // Move to next players turn
+                    currentPlayerNum = (currentPlayerNum + 1) % 4;
+                    Debug.Log("turnstage 5 reached, returning to 0 with a new player");
+                    turnStage = 0;
+                    break;
+                default:
+                    // Nothing should happen here
+                    break;
+            }
+        }
+        else
+        {
+            Debug.Log("got here 3");
+            // No :
+            // Compare values of players cards
+            int winner = 0;
+            int greatest = 0;
+            for(int i = 0; i < 4; i++)
+            {
+                if (players[i].getCardFromHand(0).getValue()> greatest)
+                {
+                    greatest = players[i].getCardFromHand(0).getValue();
+                    winner = i;
+                }
+            }
+            // Decide a winner
+            Debug.Log("The winner is player " + (winner + 1) + ": " + players[winner].getPlayerName());
+
+        }
+        cardClicked = 0;
+
     }
 }

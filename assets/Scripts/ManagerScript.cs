@@ -74,11 +74,11 @@ namespace Manager
         }
         public override void play(Player accuser, Player accused)
         {
-            if (accuser.getCardFromHand().getValue() > accused.getCardFromHand().getValue())
+            if (accuser.getCardFromHand(0).getValue() > accused.getCardFromHand(0).getValue())
             {
                 accused.takeOut();
             }
-            else if (accuser.getCardFromHand().getValue() < accused.getCardFromHand().getValue())
+            else if (accuser.getCardFromHand(0).getValue() < accused.getCardFromHand(0).getValue())
             {
                 accuser.takeOut();
             }
@@ -174,7 +174,11 @@ namespace Manager
         public int getCount()
         {
             return cards.Count;
-        }
+        }/*
+        public bool isCardDirected(int indexCheck)
+        {
+            return (cards[indexCheck].getValue() < 4 || (cards[indexCheck].getValue() > 4 && cards[indexCheck].getValue() < 7));
+        }*/
     }
 
     public class Player
@@ -188,10 +192,16 @@ namespace Manager
         {
             playerNumber = num;
             playerName = name;
+            heldCards = new GroupedCards();
+            playedCards = new GroupedCards();
         }
-        public Card getCardFromHand()
+        public Card getCardFromHand(int get)
         {
-            return heldCards.getCard(0);
+            return heldCards.getCard(get);
+        }
+        public void takeCard(Card taken)
+        {
+            heldCards.addCard(taken);
         }
         public string getPlayerName()
         {
