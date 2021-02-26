@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
 using Manager;
@@ -26,6 +27,7 @@ public class GameScript : MonoBehaviour
     private int turnStage = 0;
     private int chosencard = 0;
     private int cardClicked = 0;
+    private bool drawnLastCard = false;
 
     public Button cardButtonA;
     public Button cardButtonB;
@@ -170,7 +172,7 @@ public class GameScript : MonoBehaviour
             play.takeCard(deck.takeCard(Random.Range(0, deck.getCount())));
             Debug.Log("Player " + play.getPlayerName() + " took " + play.getCardFromHand(0).getCardRole() + " card ");
         }
-        //
+        // Adds a listener that calls the functions within the parentheses when the buttons are pressed.
         cardButtonA.onClick.AddListener(CBAClick);
         cardButtonB.onClick.AddListener(CBBClick);
     }
@@ -181,21 +183,32 @@ public class GameScript : MonoBehaviour
         
         // Start a round system
         // Check whether there are any cards left in the deck
-        if (deck.getCount() > 0)
+        if (!drawnLastCard && players.Count > 0)
         {
-            //Debug.Log("deck has cards");
             // Do a turn with (player) input
             switch (turnStage)
             {
                 case 0:
-                    // Draw a new card
-                    players[currentPlayerNum].takeCard(deck.takeCard(0));
-                    Debug.Log("turnstage 0 reached (drawing card), with player " + currentPlayerNum);
-                    turnStage = 1;
+                    if (players[currentPlayerNum].isPlaying())
+                    {
+
+                        // Remove handmaid protection (if present from previous turn)
+                        players[currentPlayerNum].changeProtection(false);
+                        // Draw a new card
+                        players[currentPlayerNum].takeCard(deck.takeCard(0));
+                        Debug.Log("turnstage 0 reached (drawing card), with player " + currentPlayerNum);
+                        turnStage = 1;
+                    }
+                    else
+                    {
+                        turnStage = 5;
+                    }
                     break;
                 case 1:
+                    // Display cards
+                    cardButtonA.GetComponentInChildren<Text>().text = ("Play " + players[currentPlayerNum].getCardFromHand(0).getCardRole() + " " + players[currentPlayerNum].getCardFromHand(0).getCardName() + ".\nThe card's value is " + players[currentPlayerNum].getCardFromHand(0).getValue() + ".\n" + players[currentPlayerNum].getCardFromHand(0).getCardDescription());
+                    cardButtonB.GetComponentInChildren<Text>().text = ("Play " + players[currentPlayerNum].getCardFromHand(1).getCardRole() + " " + players[currentPlayerNum].getCardFromHand(1).getCardName() + ".\nThe card's value is " + players[currentPlayerNum].getCardFromHand(1).getValue() + ".\n" + players[currentPlayerNum].getCardFromHand(1).getCardDescription());
                     // Wait for decision
-                    //Debug.Log("turnstage 1 reached (deciding on a card)");
                     if (cardClicked > 0)
                     {
                         Debug.Log("Card was chosen");
@@ -221,12 +234,19 @@ public class GameScript : MonoBehaviour
                     int targetplayer = (currentPlayerNum + 1) % 4;
                     // Play card
                     players[currentPlayerNum].getCardFromHand(chosencard).play(players[currentPlayerNum],players[targetplayer]);
+                    players[currentPlayerNum].getCardFromHand(chosencard).discard(players[currentPlayerNum]);
+                    if (players[currentPlayerNum].allCards() > 0)
+                    {
+                        players[currentPlayerNum].playDiscard(chosencard);
+                    }
                     Debug.Log("turnstage 3 reached (play directed card)");
                     turnStage = 5;
                     break;
                 case 4:
                     // Play card with no target
-                    players[currentPlayerNum].getCardFromHand(chosencard).play(players[currentPlayerNum], players[0]);
+                    players[currentPlayerNum].getCardFromHand(chosencard).play(players[currentPlayerNum], null);
+                    players[currentPlayerNum].getCardFromHand(chosencard).discard(players[currentPlayerNum]);
+                    players[currentPlayerNum].playDiscard(chosencard);
                     //Debug.Log("turnstage 4 reached (play undirected card)");
                     turnStage = 5;
                     break;

@@ -28,9 +28,9 @@ namespace Manager
             return description;
         }
 
-        public virtual void pickUp(){}
+        public virtual void pickUp(Player picker){}
         public virtual void play(Player accuser, Player accused) {}
-        public virtual void discard(){}
+        public virtual void discard(Player discarder) {}
     }
 
     public class GuardCard:Card
@@ -40,13 +40,14 @@ namespace Manager
             value = 1;
             role = "Guard";
             cardName = givenName;
+            description = "Accuse another player of having a certain type of card, other than a guard. If you are correct they will go out.";
         }
         public override void play(Player accuser, Player accused){
-            //Player accused = null; //replace with the accused player
-            //int guessValue = 0; // replace with guessed card
-            //if (guessvalue == accused.getCard().getCardValue()){
-                //accused.takeOut();
-            //}
+            int guessValue = 0;
+            if (guessValue == accused.getCardFromHand(0).getValue()){
+                Debug.Log("Your assumption was correct");
+                accused.takeOut();
+            }
         }
     }
     
@@ -57,10 +58,10 @@ namespace Manager
             value = 2;
             role = "Priest";
             cardName = givenName;
+            description = "See another players card.";
         }
         public override void play(Player accuser, Player accused){
-            //Player confessed = null; // replace with the targeted player.
-            // tell the player confessed.getCard().getValue() + confessed.getCard().getRole()
+            Debug.Log(accused.getCardFromHand(0).getValue() + accused.getCardFromHand(0).getCardRole());
         }
     }
     
@@ -71,20 +72,23 @@ namespace Manager
             value = 3;
             role = "Baron";
             cardName = givenName;
+            description = "Challenge another player. Whoever has the lowest value, between your remaining card and the opponent's card, goes out.";
         }
         public override void play(Player accuser, Player accused)
         {
             if (accuser.getCardFromHand(0).getValue() > accused.getCardFromHand(0).getValue())
             {
+                Debug.Log("You won the challenge");
                 accused.takeOut();
             }
             else if (accuser.getCardFromHand(0).getValue() < accused.getCardFromHand(0).getValue())
             {
+                Debug.Log("You lost the challenge.");
                 accuser.takeOut();
             }
             else
             {
-                //tell players that they have the same card and no-one goes out
+                Debug.Log("Both players have the same card");
             }
         }
     }
@@ -96,10 +100,11 @@ namespace Manager
             value = 4;
             role = "Handmaid";
             cardName = givenName;
+            description = "Protect yourself for 1 round.";
         }
         public override void play(Player accuser, Player accused)
         {
-            //Make player protected for 1 round
+            accuser.changeProtection(true);
         }
     }
     
@@ -110,6 +115,7 @@ namespace Manager
             value = 5;
             role = "Prince";
             cardName = givenName;
+            description = "Force another player to discard their card.";
         }
         public override void play(Player accuser, Player accused)
         {
@@ -124,9 +130,11 @@ namespace Manager
             value = 6;
             role = "King";
             cardName = givenName;
+            description = "Swap your remaining card with another player's card.";
         }
         public override void play(Player accuser, Player accused)
         {
+            accused.getCardFromHand(0).discard(accuser);
         }
     }
     
@@ -137,6 +145,14 @@ namespace Manager
             value = 7;
             role = "Countess";
             cardName = givenName;
+            description = "Does nothing when played.Will discard itself if paired with the king or prince.";
+        }
+        public override void pickUp(Player picker)
+        {
+            if (picker.getCardFromHand(0).getValue() == 5 || picker.getCardFromHand(0).getValue() == 6)
+            {
+                picker.getCardFromHand(1).discard(picker);
+            }
         }
     }
     
@@ -147,6 +163,11 @@ namespace Manager
             value = 8;
             role = "Princess";
             cardName = givenName;
+            description = "Playing this will cause you to go out. Keep at all costs.";
+        }
+        public override void discard(Player discarder)
+        {
+            discarder.takeOut();
         }
     }
 
@@ -174,11 +195,7 @@ namespace Manager
         public int getCount()
         {
             return cards.Count;
-        }/*
-        public bool isCardDirected(int indexCheck)
-        {
-            return (cards[indexCheck].getValue() < 4 || (cards[indexCheck].getValue() > 4 && cards[indexCheck].getValue() < 7));
-        }*/
+        }
     }
 
     public class Player
@@ -187,6 +204,8 @@ namespace Manager
         private string playerName;
         private GroupedCards heldCards;
         private GroupedCards playedCards;
+        public bool isIn = true;
+        public bool isProtected = false;
 
         public Player(int num, string name)
         {
@@ -209,7 +228,35 @@ namespace Manager
         }
         public void takeOut()
         {
-            heldCards.getCard(0).discard();
+            if (heldCards.getCount() > 1)
+            {
+                playDiscard(1);
+                playDiscard(0);
+            }
+            else if (heldCards.getCount() == 1)
+            {
+                playDiscard(0);
+            }
+            isIn = false;
+        }
+        public void playDiscard(int playedCard)
+        {
+            if (heldCards.getCount() > 0)
+            {
+                playedCards.addCard(heldCards.takeCard(playedCard));
+            }
+        }
+        public void changeProtection(bool protection)
+        {
+            isProtected = protection;
+        }
+        public bool isPlaying()
+        {
+            return isIn;
+        }
+        public int allCards()
+        {
+            return heldCards.getCount();
         }
     }
 }
